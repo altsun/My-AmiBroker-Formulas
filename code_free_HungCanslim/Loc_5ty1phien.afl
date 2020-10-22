@@ -1,0 +1,21 @@
+Filter =  
+C * V >= 5000000
+AND Ref(C,-5)*Ref(V,-5) >=1000000
+AND Ref(C,-5)*Ref(V,-10) >=1000000
+AND Ref(C,-5)*Ref(V,-15) >=1000000
+AND Ref(C,-5)*Ref(V,-30) >=1000000
+AND C*V<=400000000
+AND MA(V,15)>= 50000 
+AND MA(V,50)>= 50000
+AND Ref(V,-5) >50000
+AND Ref(V,-10) >50000
+AND Ref(V,-20) >50000
+
+ ;
+
+AddColumn(((C - Ref(C,-1))/Ref(C,-1))*100 ,"% Tang gia ");
+AddColumn(C*V,"Gia tri GD ");
+AddColumn(C,"Gia today");
+AddColumn(RSI(14),"RSI");
+AddSummaryRows(31, 1.2,4);
+SetSortColumns( -4 ) ;

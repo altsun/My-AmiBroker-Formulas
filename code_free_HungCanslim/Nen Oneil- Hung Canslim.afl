@@ -1,0 +1,4 @@
+_SECTION_BEGIN("Ngoc1");
+BarColor=IIf(C>Ref(C,-1),colorGreen,colorRed);
+PlotOHLC( Open,  High,  Low,  Close, "", BarColor, styleBar);
+_SECTION_END();

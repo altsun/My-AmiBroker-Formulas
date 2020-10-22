@@ -1,0 +1,214 @@
+_SECTION_BEGIN("Price");
+SetChartOptions(0,chartShowArrows|chartShowDates);
+_N(Title = StrFormat("{{NAME}} - {{INTERVAL}} {{DATE}} Open %g, Hi %g, Lo %g, Close %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 ) ) ));
+Plot( C, "Close", ParamColor("Color", colorBlack ), styleNoTitle | ParamStyle("Style") | GetPriceStyle() ); 
+_SECTION_END();
+ 
+_SECTION_BEGIN("SupportResistance");
+// START SCRIPT UNTUK SUPPORT / RESISTANT
+ 
+ 
+WarnaResistant = ParamColor("Warna Garis Resistant",colorRed);
+WarnaSupport = ParamColor("Warna Garis Support",colorGreen);
+R1_show = 0;
+S1_show = 0;
+ 
+SRStyle = ParamStyle("S/R Style",styleThick);
+ 
+if (ParamToggle("Garis Support&Resistance", "Tidak|Ya", 1 ))
+{
+	// RESISTANT
+	LastHighestValue = LastVisibleValue(Ref(H,-1));
+	if (LastVisibleValue(H) == H[LastValue(BarIndex())])
+		LastHighestValue = LastVisibleValue(H);
+ 
+	i = 1;
+	
+	if (LastHighestValue < HighestVisibleValue(H))
+	{
+			while (LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(H, -1), i)) < LastHighestValue)
+				i++;
+ 
+	    	R1 = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(H, -1), i));
+ 
+			R1x = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(BarIndex(), -1), i));
+			Plot(IIf(BarIndex() >= R1x,LastValue(R1),Null),"R1",WarnaResistant ,SRStyle);
+			PlotText("R1 : " + R1, BarCount + 1, LastValue(R1), WarnaResistant);
+			R1_show = 1;
+ 
+			i++;
+ 
+			if (HighestVisibleValue( H ) > R1)
+			{
+				while (LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1), Ref(H,-1), i)) <= R1)
+					i++;
+ 
+				R2 = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1), Ref(H,-1), i));
+				R2x = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(BarIndex(), -1), i));
+	
+				Plot(IIf(BarIndex() >= R2x,LastValue(R2),Null),"R2",WarnaResistant ,SRStyle);
+				PlotText("R2 : " + R2, BarCount + 1, LastValue(R2), WarnaResistant);
+				i++;
+				if (HighestVisibleValue( H )> R2)
+				{ 		
+					while (LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1), Ref(H,-1), i)) <= R2)
+						i++;
+					R3 = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1), Ref(H,-1), i));
+					R3x = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(BarIndex(), -1), i));	
+ 
+					Plot(IIf(BarIndex() >= R3x,LastValue(R3),Null),"R3",WarnaResistant ,SRStyle);
+					PlotText("R3 : " + R3, BarCount + 1, LastValue(R3), WarnaResistant);
+				}
+			}
+	}
+	else if (LastHighestValue == HighestVisibleValue(H))
+	{
+	   	R1 = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(H, -1), i));
+		R1x = LastVisibleValue(ValueWhen(H <= Ref(H,-1) AND Ref(H,-2) <= Ref(H, -1),Ref(BarIndex(), -1), i));
+		if (R1 == LastHighestValue)
+		{
+			Plot(IIf(BarIndex() >= R1x,LastValue(R1),Null),"R1",WarnaResistant ,SRStyle);
+			PlotText("R1 : " + R1, BarCount + 1, LastValue(R1), WarnaResistant);
+			R1_show = 1;
+		}
+	}
+ 
+	// SUPPORT
+	LastLowestValue = LastVisibleValue(Ref(L,-1));
+	if (LastVisibleValue(L) == L[LastValue(BarIndex())])
+		LastLowestValue = LastVisibleValue(L);
+ 
+	i = 1;
+ 
+	if (LastLowestValue > LowestVisibleValue(L))
+	{	
+			while (LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1),Ref(L, -1), i)) > LastLowestValue)
+				i++;
+ 
+			S1 = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1),Ref(L, -1), i));
+			S1x = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1),Ref(BarIndex(), -1), i));
+			Plot(IIf(BarIndex() >= S1x,LastValue(S1),Null),"S1",WarnaSupport ,SRStyle);
+			PlotText("S1 : " + S1, BarCount + 1, LastValue(S1), WarnaSupport);
+			S1_show = 1;
+			i++;
+ 
+			if (LowestVisibleValue( L ) < S1)
+			{
+				while (LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(L,-1), i)) >= S1)
+					i++;
+ 
+				S2 = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(L,-1), i));
+				S2x = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(BarIndex(),-1), i));	
+ 
+				Plot(IIf(BarIndex() >= S2x,LastValue(S2),Null),"S2",WarnaSupport ,SRStyle);
+				PlotText("S2 : " + S2, BarCount + 1, LastValue(S2), WarnaSupport);
+				i++;
+				if (LowestVisibleValue( L )< S2)
+				{ 		
+					while (LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(L,-1), i)) >= S2)
+						i++;
+					S3 = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(L,-1), i));
+					S3x = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1), Ref(BarIndex(),-1), i));
+					Plot(IIf(BarIndex() >= S3x,LastValue(S3),Null),"S3",WarnaSupport ,SRStyle);
+					PlotText("S3 : " + S3, BarCount + 1, LastValue(S3), WarnaSupport);
+				}
+			}
+	}
+	else if (LastLowestValue == LowestVisibleValue(L))
+	{
+	   	S1 = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1),Ref(L, -1), i));
+		S1x = LastVisibleValue(ValueWhen(L >= Ref(L,-1) AND Ref(L,-2) >= Ref(L, -1),Ref(BarIndex(), -1), i));
+		if (S1 == LastLowestValue)
+		{
+			Plot(IIf(BarIndex() >= S1x,LastValue(S1),Null),"S1",WarnaSupport ,SRStyle);
+			PlotText("S1 : " + S1, BarCount + 1, LastValue(S1), WarnaSupport);
+			S1_show = 1;
+		}
+	}
+ 
+	if (S1_show AND R1_show)
+	{
+		SR = Prec((1-(S1/R1))*100,2);
+	}
+}
+ 
+// END SCRIPT UNTUK SUPPORT / RESISTANT
+_SECTION_END();
+
+_SECTION_BEGIN("Bollinger Bands");
+P = ParamField("Price field",-1);
+Periods = Param("Periods", 15, 2, 100, 1 );
+Width = Param("Width", 2, 0, 10, 0.05 );
+Color = ParamColor("Color", colorLightGrey );
+Style = ParamStyle("Style") | styleNoRescale;;
+Plot( bbt = BBandTop( P, Periods, Width ), "BBTop" + _PARAM_VALUES(), Color, Style ); 
+Plot( bbb = BBandBot( P, Periods, Width ), "BBBot" + _PARAM_VALUES(), Color, Style ); 
+PlotOHLC( bbt, bbt, bbb, bbb, "", ColorBlend( Color, colorWhite, 0.9 ), styleCloud | styleNoRescale, Null, Null, Null, -1 );
+_SECTION_END();
+
+_SECTION_BEGIN("MA");
+P = ParamField("Price field",-1);
+Periods = Param("Periods", 30, 2, 300, 1, 10 );
+Plot( MA( P, Periods ), _DEFAULT_NAME(), ParamColor( "Color", colorCycle ), ParamStyle("Style") ); 
+_SECTION_END();
+
+_SECTION_BEGIN("Price");
+SetChartOptions(0,chartShowArrows|chartShowDates);
+_N(Title = StrFormat("{{HUNG CANSLIM - CANSLIM.VN}} - {{INTERVAL}} {{DATE}} Open %g, Hi %g, Lo %g, Close %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 ) ) ));
+Plot( C, "Close", ParamColor("Color", colorBlack ), styleDots | ParamStyle("Style") | GetPriceStyle() ); 
+_SECTION_END();
+
+
+
+
+
+mua =   
+C >= Ref(H,-1)
+AND C >= Ref(H,-2)
+AND C >= Ref(H,-3)
+AND C >= Ref(H,-4)
+
+
+;
+ 
+
+ban =  
+    C <= Ref(L,-1)
+AND C <= Ref(L,-2)
+AND C <= Ref(L,-3)
+AND C <= Ref(L,-4)
+AND C <= Ref(L,-5)
+AND C <= Ref(L,-6)
+AND C <= Ref(L,-7)
+AND C <= Ref(L,-8)
+ ;
+
+
+
+
+
+ 
+Buy = ExRem(mua, ban);
+Sell = ExRem(ban, mua);
+
+PlotShapes(IIf(Buy,shapeUpArrow,shapeNone),colorBlue,0,Low,Offset=-10);
+PlotShapes(IIf(Sell,shapeDownArrow,shapeNone),colorRed,0,High,Offset=-10);
+
+Filter = Buy OR Sell ;
+
+
+AddColumn( IIf( Buy, 66,1 ), "buy", formatChar, 1, bkcolor =IIf (Buy,colorGreen, colorRed ));
+AddColumn( IIf( Sell, 83,1 ), "sell", formatChar, 1, bkcolor =IIf (Sell,colorRed, colorGreen ));
+AddColumn(C,"close",1.2);
+
+AddColumn(C*V,"Gia tri GD ");
+
+AddColumn(((C - Ref(C,-1))/Ref(C,-1))*100 ,"% Tang gia ");
+AddColumn(((V - MA(V,50))/MA(V,50))*100 ,"% Dot bien KL");
+_SECTION_END();
+
+_SECTION_BEGIN("MA1");
+P = ParamField("Price field",-1);
+Periods = Param("Periods", 15, 2, 300, 1, 10 );
+Plot( MA( P, Periods ), _DEFAULT_NAME(), ParamColor( "Color", colorCycle ), ParamStyle("Style") ); 
+_SECTION_END();

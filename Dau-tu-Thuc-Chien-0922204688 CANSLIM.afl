@@ -1,0 +1,32 @@
+_SECTION_BEGIN("Ngoc1");
+BarColor=IIf(C>Ref(C,-1),colorBlue,colorRed);
+PlotOHLC( Close,  High,  Low,  Close, "", BarColor, styleBar);
+_SECTION_END();
+
+//4-Day-Range Switch
+prev=AMA2(C,1,0);
+d=IIf(C>Ref(Max(Max(H,Ref(H,-3)),Max(Ref(H,-1),Ref(H,-2))),-1),Min(Min(L,Ref(L,-3)),Min(Ref(L,-1),Ref(L,-2))),
+IIf(C<Ref(Min(Min(L,Ref(L,-3)),Min(Ref(L,-1),Ref(L,-2))),-1),Max(Max(H,Ref(H,-3)),Max(Ref(H,-1),Ref(H,-2))),PREV));
+a=Cross(Close,d);
+b=Cross(d,Close);
+state=IIf(BarsSince(a)<BarsSince(b),1,0);
+s=state>Ref(state,-1);
+ss=state<Ref(state,-1);
+sss=state==Ref(state,-1);
+col=IIf(state == 1 ,51,IIf(state ==0,4,1));
+
+
+_SECTION_BEGIN("");
+_N(Title = "{{NAME}} - {{INTERVAL}} {{DATE}}: "+_DEFAULT_NAME()+" : {{OHLCX}} {{VALUES}}"
++"\n"+EncodeColor(colorRed)+
+WriteIf(s,"EXIT all Short positions\nif trading long positions, enter long Now-\nOR at the market price on tomorrow's Open with stop="+EncodeColor(4)+WriteVal(L+.75*ATR(5),1.4)+" ,","")+
+WriteIf(ss,"exit all long positions today with a Market On Close (MOC) order\nOR at the market price on tomorrow's Open with stop="+EncodeColor(4)+WriteVal(Ref(H+.75*ATR(5), -1),1.4)+",","")+
+WriteIf( sss ,"No trading signals today.","") );
+
+
+// STAMP CODE NAME 
+GfxSelectFont("Tahoma", 10, 700 ); 
+GfxSetTextColor(colorBlue);
+GfxSetTextAlign(6);
+GfxTextOut("DAU TU THUC CHIEN - 0922204688 - DAO TAO - TU VAN DAU TU - ROBOT GD",Status("pxwidth")/2,40); //Status("pxheight")/30);
+GraphXSpace=5;

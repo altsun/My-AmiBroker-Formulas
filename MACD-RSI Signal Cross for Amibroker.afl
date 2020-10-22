@@ -1,0 +1,10 @@
+// Downloaded From https://www.WiseStockTrader.com
+//system:
+Buy =   (Cross( MACD(), Signal() ) OR Cross( RSI(), 30 ))  AND Volume > 100000;
+
+//exploration
+Filter = Buy;
+AddColumn( Buy, "Buy", 1);
+AddColumn( Volume, "Volume", 1);
+AddColumn( Cross( MACD(), Signal() ), "MACD/Signal cross", 1);
+AddColumn( Cross( RSI(), 30 ), "RSI / 30 cross", 1);

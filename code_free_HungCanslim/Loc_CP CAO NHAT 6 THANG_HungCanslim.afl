@@ -1,0 +1,15 @@
+Filter = 
+
+C>= HHV(C,120)
+AND C*MA(V,15)>=500000
+AND Ref(V,-5)>=50000
+AND Ref(V,-10)>=50000
+
+ ;
+
+
+
+AddColumn(((C -Ref(C,-1))/Ref(C,-1))*100 ,"% Tang gia ");
+AddColumn(C*V,"Gia tri GD ");
+AddColumn(C,"Gia today");
+AddSummaryRows(16, 1.2,5);
