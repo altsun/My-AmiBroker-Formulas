@@ -1,0 +1,9 @@
+Plot(C,"",IIf(C>Ref(C,-1),colorCustom9,colorRed),styleCandle);
+Plot(MA( C, 50 ),"MA50",colorCustom11,styleLine|styleThick);
+Plot(MA( C, 20 ),"MA20",colorYellow,styleLine|styleThick);
+MA20 = MA(C,20);
+MA50 = MA(C,50);
+Buy = Cross(MA20, MA50);
+Sell = Cross ( MA50, MA20);
+PlotShapes( shapeUpArrow * Buy, colorCustom11, 0,Low);
+PlotShapes( shapeDownArrow * Sell, colorCustom11, 0,High );

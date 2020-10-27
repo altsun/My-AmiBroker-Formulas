@@ -1,0 +1,58 @@
+_SECTION_BEGIN("CODE AMI LOC DONG TIEN");
+Plot(C,"",IIf(C>Ref(C,-1),colorCustom9,colorRed),styleCandle);
+DK1 = V>100000; //(Kh?i lý?ng l?n hõn 100000)
+DK2 = C>5; //(Giá c? phi?u l?n hõn 5 ngh?n)
+DK3 =V>0.8*MA(Ref(V,-1),10);// kh?i lý?ng l?n hõn 80% trung b?nh 10 phiên.
+DK4 = C>1.02*Ref(C,-1);// giá l?n hõn 2% phiên li?n trý?c, n?u mu?n giá tr? cáo hõn 2% th? thay 1.02 thành 1.03, 1.04… tùy các bác ch?n. 
+
+DK6 = C>1.02*MA(C,5);
+
+Buy = (DK1 AND DK2 AND DK3 AND DK4 AND DK6); //(Ði?u ki?n mua)
+PlotShapes(IIf( Buy , shapeUpArrow , shapeNone), colorGreen,0,Low, Offset=-15) ; //(M?i tên báo mua)
+Filter = Buy;
+_SECTION_END();
+_SECTION_BEGIN("Price");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 34, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",234,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+30 );
+GfxTextOut( Name(), Hor,Ver-50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 14, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+85 );
+GfxSelectFont("arial", 18 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("UVN But Long 1", Status("pxheight")/26 );
+GfxTextOut( "CODE AMI LOC DONG TIEN", Status("pxwidth")/2, Status("pxheight")/18 );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/36 );
+GfxTextOut( "Hotline : 0372.095.129 - Website : Nududo.com" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxSetTextColor( colorLightGrey );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/46 );
+GfxTextOut( FullName() , Status("pxwidth")/1.2, Status("pxheight")/9 );
+GfxTextOut( "("+Name()+") " , Status("pxwidth")/1.2, Status("pxheight")/7 );
+_SECTION_END();
+_SECTION_BEGIN("Vol");
+no=Param( "Swing", 10, 1, 55 );
+res=HHV(H,no);
+sup=LLV(L,no);
+avd=IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0));
+avn=ValueWhen(avd!=0,avd,1);
+tsl=IIf(avn==1,sup,res);
+VCol = ParamColor("Vol. Color", colorLime );
+VH = Param("Volume Height", 5,1,15,1 );
+SetBarFillColor( IIf( V > Ref(V,-1), colorGreen, colorRed) );
+PlotOHLC(0,V,0,V,"Volume",VCol,styleCandle|styleOwnScale,VH );
+_SECTION_END();

@@ -1,0 +1,144 @@
+//------------------------------------------------------------------------------
+//  Formula Name	:      NICK MA SWING SYSTEM AFL for Amibroker by pipschart
+//  Author	:      KrT group
+//  Uploader	:      www.pipschart.com
+//  E-mail		:      info@pipschart.com
+//  Amibroker Blog	:      www.pipschart.com/amibroker
+//  Origin		:      Modified & Collected from different sources.
+//------------------------------------------------------------------------------
+
+_SECTION_BEGIN("KrT group");
+GfxSetBkMode(1);
+X=750;
+Y=1;
+Font=10;
+GfxSelectFont("Impact",Font*2.2, 550);GfxSetTextColor(colorRed);GfxTextOut("KrT group",x,y+10);
+GfxSelectFont("Impact",Font*2.2, 550);GfxSetTextColor(colorGreen);GfxTextOut("RESEARCH",x+120,Y+10);
+
+_SECTION_END();
+
+//------------------------------------------------------------------------------
+_SECTION_BEGIN("NMA Swing Explorer");
+SetBarsRequired(200,0);
+
+GraphXSpace = 5;
+SetChartOptions(0,chartShowArrows|chartShowDates);
+k =  Optimize("K",Param("K",2,0.25,5,0.25),0.25,5,0.25);
+Per= Optimize("atr",Param("atr",20,3,20,1),3,20,1);
+HACLOSE=(O+H+L+C)/4;
+HaOpen = AMA( Ref( HaClose,  -1 ),  0.5 );
+HaHigh = Max( H,  Max( HaClose,  HaOpen ) );
+HaLow = Min( L,  Min( HaClose,  HaOpen ) );
+if( ParamToggle("Plot Heikin-Ashi", "No,Yes", 1 ) )
+   PlotOHLC( HaOpen, HaHigh, HaLow, HaClose, "Heikin Ashi " + Name(), colorBlack, 
+
+styleCandle );
+else
+ Plot( C, "Regular candles " + Name(), colorBlack, styleCandle );
+j=Haclose;
+
+
+//=========================Indicator=================================
+
+f=ATR(15);
+
+rfsctor = WMA(H-L, Per);
+
+revers = k * rfsctor;
+
+Trend = 1; 
+NW[0] = 0; 
+
+
+for(i = 1; i < BarCount; i++)
+{
+ if(Trend[i-1] == 1)               
+ {
+  if(j[i] < NW[i-1])                
+  {
+   Trend[i] = -1;                  
+   NW[i] = j[i] + Revers[i];       
+  }
+  else                             
+  {
+   Trend[i] = 1;
+   if((j[i] - Revers[i]) > NW[i-1])
+   {
+    NW[i] = j[i] - Revers[i];
+   }
+   else
+   {
+    NW[i] = NW[i-1];
+   }
+  }
+ }
+ if(Trend[i-1] == -1)              
+ {
+  if(j[i] > NW[i-1])               
+  {
+   Trend[i] = 1;                   
+   NW[i] = j[i] - Revers[i];       
+  }
+  else                             
+  {
+   Trend[i] = -1;
+   if((j[i] + Revers[i]) < NW[i-1])
+   {
+    NW[i] = j[i] + Revers[i];
+   }
+   else
+   {
+    NW[i] = NW[i-1];
+   }
+  }
+ }
+}
+
+//===============system================
+
+Plot(NW, "", IIf(Trend == 1, 27, 4), 4);
+Buy=Cover=Cross(j,nw);
+Sell=Short=Cross(nw,j);
+SellPrice=ValueWhen(Sell,C,1);
+BuyPrice=ValueWhen(Buy,C,1);
+Long=Flip(Buy,Sell);
+Shrt=Flip(Sell,Buy );
+NMAB= NW<HACLOSE;
+NMAS= NW>HACLOSE;
+
+NMA_status= WriteIf(NMAB, "BUY MODE", WriteIf(NMAS, "SELL MODE", "NEUTRAL"));
+NMAS_Col=IIf(NMAB, colorGreen, IIf(NMAS, colorRed, colorLightGrey));
+Filter=1;
+AddColumn( NW[BarCount-1], "SAR", 1.2 );
+AddColumn( HACLOSE, "HA Close", 1.2 );
+AddColumn( C, "Close", 1.2 );
+AddTextColumn(NMA_status, "MODE", 1, colorWhite, NMAS_Col);
+_SECTION_END();
+
+//=================TITLE===========================================
+
+
+_SECTION_BEGIN("Title");
+if( Status("action") == actionIndicator )
+(
+Title = EncodeColor(colorWhite)+ "NICK MA Swing System" + " - " +  Name() + " - " + 
+
+EncodeColor(colorRed)+ Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +" - "+"\n" +EncodeColor(colorRed) +"Op-"+O+"  "+"Hi-"+H+"  "+"Lo-"+L+"  "+
+"Cl-"+C+"  "+ "Vol= "+ WriteVal(V)+"\n"+
+EncodeColor(colorLime)+
+WriteIf (Buy , " GO LONG / Reverse Signal at "+C+"  ","")+
+WriteIf (Sell , " EXIT LONG / Reverse Signal at "+C+"  ","")+"\n"+EncodeColor(colorWhite)+
+WriteIf(Sell , "Total Profit/Loss for the Last Trade Rs."+(C-BuyPrice)+"","")+
+WriteIf(Buy  , "Total Profit/Loss for the Last trade Rs."+(SellPrice-C)+"","")+
+WriteIf(Long AND NOT Buy, "Trade : Long - Entry price Rs."+(BuyPrice),"")+
+WriteIf(shrt AND NOT Sell, "Trade : Short - Entry price Rs."+(SellPrice),"")+"\n"+
+WriteIf(Long AND NOT Buy, "Current Profit/Loss Rs."+(C-BuyPrice)+"","")+
+WriteIf(shrt AND NOT Sell, "Current Profit/Loss Rs."+(SellPrice-C)+"",""));
+PlotShapes(IIf(Buy, shapeSquare, shapeNone),colorGreen, 0, L, Offset=-40);
+PlotShapes(IIf(Buy, shapeSquare, shapeNone),colorLime, 0,L, Offset=-50);                     
+PlotShapes(IIf(Buy, shapeUpArrow, shapeNone),colorWhite, 0,L, Offset=-45);
+PlotShapes(IIf(Sell, shapeSquare, shapeNone),colorRed, 0, H, Offset=40);
+PlotShapes(IIf(Sell, shapeSquare, shapeNone),colorOrange, 0,H, Offset=50);                     
+PlotShapes(IIf(Sell, shapeDownArrow, shapeNone),colorWhite, 0,H, Offset=-45);
+_SECTION_END();

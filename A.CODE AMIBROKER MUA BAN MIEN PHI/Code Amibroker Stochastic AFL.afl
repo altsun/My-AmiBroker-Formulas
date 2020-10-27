@@ -1,0 +1,32 @@
+_SECTION_BEGIN("STOCH RSI");
+GraphXSpace =25;
+PeriodRSI = Param( "PeriodRSI", 14, 1, 250, 1 );
+PeriodStoch = Param( "PeriodStoch", 14, 1, 250, 1 );
+MAType = Param( "MAType", 1, 1, 2, 1 );
+PeriodSK = Param( "PeriodSK", 3, 1, 250, 1 );
+PeriodSD = Param( "PeriodSD", 3, 1, 250, 1 );
+Upper = Param( "Upper", 80, 50, 100, 1 );
+Lower = Param( "Lower", 20, 0, 50, 1 );
+Center = Param( "Center", 50, 1, 100, 1 );
+irsi = RSI( PeriodRSI );
+llvRsi = LLV( irsi, PeriodStoch );
+hhvRsi = HHV( irsi, PeriodStoch );
+StoRSI = 100 * ((irsi- llvRsi) / Max(hhvRsi - llvRsi, 0.0001));
+if( MAType == 1 )
+{
+    SK = MA( StoRSI, PeriodSK );
+    SD = MA( SK, PeriodSD );
+}
+
+if( MAType == 2 )
+{
+    SK = EMA( StoRSI, PeriodSK );
+    SD = EMA( SK, PeriodSD );
+}
+Plot( Upper, "Upper", ParamColor( "ColorUpper", colorCustom5 ), styleLine );
+Plot( Lower, "Lower", ParamColor( "ColorLower", colorGreen ), styleLine );
+Plot( Center, "Center", ParamColor( "ColorCenter", colorWhite), styleDashed );
+Plot( SK, "DTOscSK", colorAqua, styleLine );
+Plot( SD, "DTOscSD", ParamColor( "ColorSD", colorRose ), styleDots );
+Plot( 0, "ZeroLine", ParamColor( "ColorZero", colorWhite ), styleLine );
+Plot( 100, "100Line", ParamColor( "Color100", colorWhite ), styleLine );

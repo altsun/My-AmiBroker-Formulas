@@ -1,0 +1,16 @@
+_SECTION_BEGIN("CCI1");
+periods = Param( "Periods", 14, 2, 200, 1 );
+Plot( SL = CCI( periods ), _DEFAULT_NAME(), ParamColor( "Color",  colorCycle), ParamStyle("Style")|stylethick  );
+Plot(100, "Qua mua", colorLavender,styleLine|styleNoTitle) ;
+Plot(0, "Qua ban", colorLavender,styleDashed) ;
+Plot(-100, "Center", colorLavender,styleLine|styleNoTitle) ; 
+_SECTION_END();
+_SECTION_BEGIN("Price");
+messageboard = ParamToggle("Tat Bar","Hien|An",1);
+if (messageboard == 1 )
+{
+Title = EncodeColor(colorCustom12) + "CHI BAO CCI" + " - " + EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V) ;
+}
+_SECTION_END();

@@ -1,0 +1,4 @@
+_SECTION_BEGIN("Duong");
+BarColor=IIf(C>Ref(C,-1),colorGreen,colorRed);
+PlotOHLC(Close,  High,  Low,  Close, "", BarColor, styleBar | styleThick);
+_SECTION_END();

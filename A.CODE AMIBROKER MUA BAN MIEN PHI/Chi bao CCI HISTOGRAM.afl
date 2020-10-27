@@ -1,0 +1,20 @@
+_SECTION_BEGIN("CCI1");
+tcci=Param("tcci",6,1,100,1);
+Zt=Param("CCI",14,1,150,1);
+Plot(CCI(zt),"",IIf(CCI(zt) > 0, colorCustom6, colorcustom8), styleHistogram+styleNoLabel);
+Plot(CCI(zt),"cci",colorWhite);
+PlotOHLC(200,IIf(CCI(zt) > 200,CCI(zt),200),200,200,"",colorCustom8,styleCloud);
+PlotOHLC(-200,-200, IIf(CCI(zt) < -200,CCI(zt),-200),-200,"",colorCustom12,styleCloud);
+PlotOHLC(100,IIf(CCI(zt) > 100,CCI(zt),100),100,100,"",colorGreen,styleCloud);
+PlotOHLC(-100,-100, IIf(CCI(zt) < -100,CCI(zt),-100),-100,"",colorRed,styleCloud);
+Plot(0,"", colorWhite, styleDashed);
+_SECTION_END();
+_SECTION_BEGIN("Price");
+messageboard = ParamToggle("Tat Bar","Hien|An",1);
+if (messageboard == 1 )
+{
+Title = EncodeColor(colorCustom12) + "CHI BAO CCI HISTOGRAM" + " - " + EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V) ;
+}
+_SECTION_END();

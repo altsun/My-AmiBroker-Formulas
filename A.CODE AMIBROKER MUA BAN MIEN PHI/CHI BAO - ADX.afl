@@ -1,0 +1,51 @@
+_SECTION_BEGIN("ADX");
+Range             = Param(" +DI - D range", 10, 5, 30,1 );
+Plot(PDI(Range),"",8,4);
+Plot(MDI(Range),"",4,4);
+Plot(MDI(Range),"",4,10);
+Plot(ADX(Range),"",6,styleGradient);
+Plot(ADX(Range),"",6,4);
+
+Buy             = Cross(PDI(Range), MDI(Range)) OR Cross (PDI(Range), ADX(Range))OR Cross (ADX(Range), MDI(Range));
+Sell            = Cross(MDI(Range), PDI(Range))OR Cross (MDI(Range), ADX(Range))OR Cross (ADX(Range), PDI (Range)) OR  (PDI(Range)>=(40) );
+ 
+PlotShapes(IIf(Buy,shapeUpArrow,shapeNone),colorGreen);
+PlotShapes(IIf(Sell,shapeDownArrow,shapeNone),colorRed);
+Plot(40,"",colorDarkGrey,styleDashed|styleNoLabel);
+Plot(20,"",colorDarkGrey,styleDashed|styleNoLabel);
+_SECTION_END();
+_SECTION_BEGIN("Price");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+_SECTION_BEGIN("Magnified Market Price");
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 28, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",220,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+25 );
+GfxTextOut( Name(), Hor,Ver-50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 10, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+65 );
+GfxSelectFont("arial", 18 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("UVN But Long 1", Status("pxheight")/45 );
+GfxTextOut( "App TBI XI", Status("pxwidth")/2, Status("pxheight")/16 );
+GfxTextOut( "MACD", Status("pxwidth")/2, Status("pxheight")/10.5 );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/45 );
+GfxTextOut( "Hotline : 0372.095.129 - Website : Nududo.com" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxSetTextColor( colorLightGrey );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/50 );
+GfxTextOut( FullName() , Status("pxwidth")/1.2, Status("pxheight")/11 );
+GfxTextOut( "("+Name()+") " , Status("pxwidth")/1.2, Status("pxheight")/8 );
+_SECTION_END();

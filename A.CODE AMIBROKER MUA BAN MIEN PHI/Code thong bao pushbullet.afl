@@ -1,0 +1,84 @@
+_SECTION_BEGIN("THO MINH VAN");
+Plot(C,"",IIf(C>Ref(C,-1),colorCustom9,colorRed),styleCandle);
+_SECTION_END();
+Plot(EMA( C, 10 ),"EMA10",colorCustom9,styleThick);
+MA10 = MA(C,10); 
+cma10 = Cross(C,MA10) AND (V >50000); 
+cmasell10 = Cross(MA10,C) AND (V >50000); 
+Filter = cma10;
+Buy = cma10;
+Sell = cmasell10;
+AddColumn(Cross(C,MA10) AND (V >50000),"Gia Cat MA10",True);
+AddColumn(V,"Khoi Luong",1.0);
+PlotShapes( shapeUpArrow * cma10, colorCustom3, 0,Low);
+PlotShapes( shapedownArrow * cmasell10, colorCustom3, 0,Low);
+
+_SECTION_BEGIN("Vol");
+no=Param( "Swing", 10, 1, 55 );
+res=HHV(H,no);
+sup=LLV(L,no);
+avd=IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0));
+avn=ValueWhen(avd!=0,avd,1);
+tsl=IIf(avn==1,sup,res);
+VCol = ParamColor("Vol. Color", colorLime );
+VH = Param("Volume Height", 5,1,15,1 );
+SetBarFillColor( IIf( V > Ref(V,-1), colorGreen, colorRed) );
+PlotOHLC(0,V,0,V,"Volume",VCol,styleCandle|styleOwnScale,VH );
+_SECTION_END();
+_SECTION_BEGIN("Bollinger Bands");
+P = ParamField("Price field",-1);
+Periods = Param("Periods", 20, 2, 300, 1 );
+Width = Param("Width", 2, 0, 10, 0.05 );
+Color = ParamColor("Color", colorCustom1 );
+Style = ParamStyle("Style");
+Plot( BBandTop( P, Periods, Width ), "BBTop" + _PARAM_VALUES(), Color, style ); 
+Plot( BBandBot( P, Periods, Width ), "BBBot" + _PARAM_VALUES(), Color, Style ); 
+_SECTION_BEGIN("Price");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+_SECTION_END();
+_SECTION_BEGIN("PushBullet");
+EnableScript("VBScript"); 
+<% 
+Public Sub pushbullet(Message_Text)
+Dim Message 
+'Your Message 
+Message = Message_Text
+Dim objXmlHttpMain , URL
+strJSONToSend = "{""type"": ""note"", ""title"": ""Alert"", ""body"":""" &Message_Text&"""}"
+URL="https://api.pushbullet.com/v2/pushes" 
+Set objXmlHttpMain = CreateObject("Msxml2.ServerXMLHTTP") 
+on error resume next 
+objXmlHttpMain.open "POST",URL, False 
+objXmlHttpMain.setRequestHeader "Authorization", "Bearer o.o8SPuqks95lMO2jnD2pHNCzARmZJe1Zm"
+objXmlHttpMain.setRequestHeader "Content-Type", "application/json"
+objXmlHttpMain.send strJSONToSend
+set objJSONDoc = nothing 
+set objResult = nothing
+'Store response 
+'msgbox(objXmlHttpMain.responseText)
+'response.Write (objXmlHttpMain.responseText) 
+alert("Hi")
+End Sub 
+%> 
+pb = GetScriptObject(); 
+if (LastValue(ValueWhen(Ref(Buy,-1),BarIndex())==BarIndex()) AND StaticVarGet(Name()+GetChartID()+"buyAlert")==0 )
+{
+pb.PushBullet("Buy Alert in " +Name() + " : BuyPrice Value is " + BuyPrice + " Time " + TimeNum());
+StaticVarSet(Name()+ GetChartID() + "buyAlertBar", LastValue(TimeNum()));
+}
+if (LastValue(TimeNum()) == StaticVarGet(Name()+GetChartID()+"buyAlertBar"))
+StaticVarSet(Name()+GetChartID()+"buyAlert",1); //alert was triggered, no more alerts on this bar
+else
+StaticVarSet(Name()+GetChartID()+"buyAlert",0); // new bar formed, and alerts can be trigered.
+if (LastValue(ValueWhen(Ref(Sell,-1),BarIndex())==BarIndex()) AND StaticVarGet(Name()+GetChartID()+"sellAlert")==0 )
+{
+pb.PushBullet("Sell Alert in " +Name() + " : SellPrice Value is " + SellPrice + " Time " + TimeNum());
+StaticVarSet(Name()+ GetChartID() + "sellAlertBar", LastValue(TimeNum()));
+}
+if (LastValue(TimeNum()) == StaticVarGet(Name()+GetChartID()+"sellAlertBar"))
+StaticVarSet(Name()+GetChartID()+"sellAlert",1); //alert was triggered, no more alerts on this bar
+else
+StaticVarSet(Name()+GetChartID()+"sellAlert",0); // new bar formed, and alerts can be trigered.
+_SECTION_END();

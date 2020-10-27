@@ -1,0 +1,18 @@
+_SECTION_BEGIN("Formula 4");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+Plot(C,"",IIf(C>Ref(C,-1),colorCustom6,colorRed),styleDots|stylecandle);
+DK1 = C> MA(C,30);
+DK2 = MA(C,30)> MA(C,40);
+DK3 = V > 50000;
+Buy = DK1 AND DK2 AND DK3;// minh khong biet la co them dieu kien trung binh 20 lon hon 50 khong, neu ko co thi ban bo "And DK4" o duoi di nhe
+AddColumn(V,"Khoi Luong",1.0);
+AddColumn(C,"Gia",1.0);
+AddColumn(Buy,"Diem mua",True,colorcustom2,colorCustom6);
+AddTextColumn( FullName(), "Full name", 77 , colorDefault, IIf( Close < 10, colorLightBlue, colorDefault ) );
+Filter = Buy;
+PlotShapes( shapeUpArrow * Buy ,colorCustom15,0,L,Offset=-15);
+Plot(MA( C, 30 ),"MA30",colorCustom8,styleLine|styleThick);
+Plot(MA( C, 40 ),"MA40",colorCustom11,styleLine|styleThick);
+_SECTION_END();

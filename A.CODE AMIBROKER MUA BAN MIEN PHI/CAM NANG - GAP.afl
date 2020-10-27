@@ -1,0 +1,62 @@
+_SECTION_BEGIN("GAP For nududo");
+SetBarFillColor(IIf(C>O,ParamColor("Candle UP Color", colorGreen),IIf(C<=O,ParamColor("Candle Down Color", colorRed),colorLightGrey)));
+Plot(C,"\nPrice",IIf(C>O,ParamColor("Wick UP Color", colorCustom9),IIf(C<=O,ParamColor("Wick Down Color", colorCustom5),colorLightGrey)),64,0,0,0,0);
+SetTradeDelays(1,1,1,1);
+_SECTION_END();
+
+Gup = L>Ref(H,-1);  
+Gdn = H<Ref(L,-1);  
+Gap = Gup OR Gdn;  
+LinLen = Param("Gap Line length",2,1,100,1);  
+ShowLine = BarsSince(Gup OR Gdn) < LinLen;  
+TextPos = Showline < Ref(ShowLine,-1);  
+GapUpHi = IIf( ShowLine, ValueWhen(Gup,Ref(H,-1)),Null);  
+GapUpLo = IIf( ShowLine, ValueWhen(Gup,L), Null); // OK  
+GapDnHi = IIf( ShowLine, ValueWhen(GDn,Ref(L,-1)), Null); // OK  
+GapDnLo = IIf( ShowLine, ValueWhen(GDn,H), Null);  
+GapLineHi = IIf( ShowLine, ValueWhen(Gap,IIf( Gup, L, IIf( GDn, Ref(L,-1), Null))), Null);  
+GapLineLo = IIf( ShowLine, ValueWhen(Gap,IIf( Gdn, H, IIf( Gup, Ref(H,-1), Null))), Null);  
+Plot(GapLineHi,"",5,styleStaircase);  
+Plot(GapLineLo,"",4,styleStaircase);  
+FirstVisibleBar = Status( "FirstVisibleBar" );  
+Lastvisiblebar = Status("LastVisibleBar");  
+for( b = Max(LinLen,Firstvisiblebar); b <= Lastvisiblebar AND b < BarCount; b++)  
+{  
+if( Gap[b-LinLen+1] )  
+{  
+PlotText(NumToStr(GapLineHi[b],1.2),b,GapLineHi[b],5);  
+PlotText("\n"+NumToStr(GapLineLo[b],1.2),b,GapLineLo[b],4);  
+}  
+}
+_SECTION_BEGIN("Price");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+_SECTION_BEGIN("Magnified Market Price");
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 34, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",234,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+30 );
+GfxTextOut( Name(), Hor,Ver-50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 14, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+85 );
+GfxSelectFont("arial", 18 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("UVN But Long 1", Status("pxheight")/26 );
+GfxTextOut( "GAP", Status("pxwidth")/2, Status("pxheight")/18 );
+GfxSetTextColor( colorRed );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/36 );
+GfxTextOut( "Hotline : 0372.095.129 - Website : Nududo.com" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxTextOut( "("+Name()+") "+ FullName() , Status("pxwidth")/2, Status("pxheight")/6 );
+_SECTION_END();

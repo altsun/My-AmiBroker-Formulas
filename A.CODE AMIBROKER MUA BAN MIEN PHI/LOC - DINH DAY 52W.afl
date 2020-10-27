@@ -1,0 +1,132 @@
+Plot( C, "Close", IIf(C>Ref(C,-1),colorCustom9,colorRed),  ParamStyle("Style") | GetPriceStyle() ); 
+GiaLonNhat52W = HHV(Ref(C,-1),260);
+GiaThapNhat52W = LLV(Ref(C,-1),260);
+DK1 = C > GiaLonNhat52W;
+DK2 = C < GiaThapNhat52W;
+Buy = DK1;
+Cover = DK2;
+AddColumn(V,"Khoi Luong",1.0);
+AddColumn(Buy,"Gia Cao Nhat 52W",True,colorcustom2,colorCustom6);
+AddColumn(cover,"Gia Thap Hon 52W",True,colorcustom2,colorCustom6);
+Filter = Buy OR Cover;
+PlotShapes( shapeUpArrow * Buy ,colorblue,0,L,Offset=-15);
+PlotShapes( shapedownArrow * cover ,colorYellow,0,L,Offset=-15);
+_SECTION_BEGIN("Bollinger Bands");
+P = ParamField("Price field",-1);
+Periods = Param("Periods", 20, 2, 100, 1 );
+Width = Param("Width", 2, 0, 10, 0.05 );
+Color = ParamColor("Color", colorDarkGrey );
+Style = ParamStyle("Style", styleLine | styleNoLabel ) | styleNoLabel;
+Plot( bbt = BBandTop( P, Periods, Width ), "BBTop" + _PARAM_VALUES(), colorCustom1, Style ); 
+Plot( bbb = BBandBot( P, Periods, Width ), "BBBot" + _PARAM_VALUES(), colorCustom1, Style ); 
+PlotOHLC( bbt, bbt, bbb, bbb, "", ColorBlend( Color, GetChartBkColor(), 0.1 ), styleThick | styleCloud | styleNoRescale, Null, Null, Null, -1 );
+Plot(MA( C, 20 ),"MA20",colorYellow,styleLine|styleThick);
+_SECTION_END();
+/* ICHIMOKU CHART */
+n1 = Param("9 1",9,1,200,1); 
+n2 = Param("26: период 2",26,1,400,1); 
+n3 = Param("26: период 3",52,1,600,1); 
+ 
+TenkanSen   =(HHV(H,n1)+LLV(L,n1))/2;             
+KijunSen    =(HHV(H,n2)+LLV(L,n2))/2;            
+ChinkouSpan =Ref(C,-n2);                          
+Cks         = Close;                             
+SenkouSpanA =Ref((KijunSen+TenkanSen)/2,-n2);    
+SpA         =(KijunSen+TenkanSen)/2;             
+SenkouSpanB =Ref((HHV(H,n3)+LLV(L,n3))/2,-n2);    
+SpB         =(HHV(H,n3)+LLV(L,n3))/2;            
+DL = Ref( C, 25 );
+Cond1 =  Ref(Close > Max(SenkouSpanA,SenkouSpanB),-1);   
+Cond2 =  Ref(Close < Min(SenkouSpanA,SenkouSpanB),-1);  
+Cond3 =  Ref(Cross(TenkanSen,KijunSen),-1);  
+Cond4 =  Ref(Cross(KijunSen,TenkanSen),-1);  
+Cond5 =  Ref(Cross(Close,ChinkouSpan ),-1);  
+Cond6 =  Ref(Cross(ChinkouSpan ,Close),-1);  
+Cond7 =  Ref(Cross (Close , Max(SenkouSpanA,SenkouSpanB)),-1);  
+Cond8 =  Ref(Cross ( Min(SenkouSpanA,SenkouSpanB), Close),-1);  
+Cond9 = Close > TenkanSen AND TenkanSen > KijunSen AND KijunSen > Max(SenkouSpanA,SenkouSpanB); 
+Cond10= Close < TenkanSen AND TenkanSen < KijunSen AND KijunSen < Min(SenkouSpanA,SenkouSpanB); 
+RemCond9=ExRem(Cond9,NOT Cond9);                  
+RemCond10=ExRem(Cond10,NOT Cond10); 
+ 
+ColSenk =IIf (Cond1,colorGreen, IIf(Cond2,colorRed,colorLightGrey)); 
+Flat  =  TenkanSen == Ref(TenkanSen,-1) OR (NOT(Cond1) AND NOT(Cond2)) ; 
+ 
+for( i = 0; i < BarCount; i++ ) 
+{ 
+   if (Flat[i]) 
+      ColTenk[i] = colorLightGrey; 
+   else
+   { 
+if (Cond1[i] AND TenkanSen[i] > TenkanSen[i-1]) 
+     ColTenk[i] = colorGreen; 
+if (Cond1[i] AND TenkanSen[i] < TenkanSen[i-1]) 
+     ColTenk[i] = colorRed; 
+if (Cond2[i] AND TenkanSen[i] < TenkanSen[i-1]) 
+     ColTenk[i] = colorRed; 
+if (Cond2[i] AND TenkanSen[i] > TenkanSen[i-1]) 
+     ColTenk[i] = colorGreen; 
+   } 
+}  
+PlotOHLC (SpA,SpA,SpB,SpB,"Cloud",IIf (SpA > SpB,ColorRGB( 64, 128, 128 ),ColorRGB( 128, 128, 128 )),styleCloud, 10, 10, n2 ); 
+above = IIf(KijunSen>SenkouSpanA AND TenkanSen>SenkouSpanB,1,0);
+within = IIf(KijunSen>SenkouSpanA AND TenkanSen<SenkouSpanB,1,0);
+below = IIf(TenkanSen<SenkouSpanA AND TenkanSen<SenkouSpanB,1,0);
+Buy = Cross(TenkanSen,KijunSen) AND (DL>Close);
+Sell = Cross(KijunSen,TenkanSen) AND (DL<KijunSen);
+StrongBuy = Buy AND above;
+MediumBuy = Buy AND within;
+WeakBuy = Buy AND below;
+StrongSell = Sell AND below;
+MediumSell = Sell AND within;
+WeakSell = Sell AND above;
+//IIf( (StrongBuy),PlotShapes(shapeUpArrow*StrongBuy,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0) , 0);
+//IIf( (MediumBuy),PlotShapes(shapeUpArrow*MediumBuy,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0), 0);
+//IIf( (WeakBuy),PlotShapes(shapeUpArrow*WeakBuy,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0), 0);
+//IIf( (StrongSell),PlotShapes(shapeDownArrow*StrongSell,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0), 0);
+//IIf( (MediumSell),PlotShapes(shapeDownArrow*MediumSell,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0), 0);
+//IIf( (WeakSell),PlotShapes(shapeDownArrow*WeakSell,colorYellow, layer = 0, yposition = Graph0, offset = -52, xshift = 0), 0);
+///end ichimoku
+_SECTION_BEGIN("Vol");
+no=Param( "Swing", 10, 1, 55 );
+res=HHV(H,no);
+sup=LLV(L,no);
+avd=IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0));
+avn=ValueWhen(avd!=0,avd,1);
+tsl=IIf(avn==1,sup,res);
+VCol = ParamColor("Vol. Color", colorLime );
+VH = Param("Volume Height", 5,1,15,1 );
+SetBarFillColor( IIf( V > Ref(V,-1), colorGreen, colorRed) );
+PlotOHLC(0,V,0,V,"Volume",VCol,styleCandle|styleOwnScale,VH );
+_SECTION_END();
+_SECTION_BEGIN("Magnified Market Price");
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 34, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",234,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+30 );
+GfxTextOut( Name(), Hor,Ver-50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 14, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+85 );
+GfxSelectFont("arial", 18 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("UVN But Long 1", Status("pxheight")/26 );
+GfxTextOut( "Code loc co phieu dinh day 52W", Status("pxwidth")/2, Status("pxheight")/18 );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/36 );
+GfxTextOut( "Hotline : 0372.095.129 - Website : Nududo.com" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxSetTextColor( colorLightGrey );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/46 );
+GfxTextOut( FullName() , Status("pxwidth")/1.2, Status("pxheight")/9 );
+GfxTextOut( "("+Name()+") " , Status("pxwidth")/1.2, Status("pxheight")/7 );
+
+_SECTION_END();

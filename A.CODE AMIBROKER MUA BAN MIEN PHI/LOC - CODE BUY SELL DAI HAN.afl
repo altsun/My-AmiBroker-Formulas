@@ -1,0 +1,58 @@
+////////////////////////////////////////////////////////////////////////////
+_SECTION_BEGIN("McGinley Dynamic - V.1.0");
+ Plot(C,"",IIf(C>Ref(C,-1),colorCustom9,colorRed),styleCandle);
+SetBarsRequired( sbrAll );
+N = Param("McGinley Dynamic N ",10,1,30,1);
+Output[0] = C[0];
+
+for( i = 1; i < BarCount; i++ )
+{
+output[ i ] = output[ i - 1 ] + (C[i]-Output[i-1])/( N*(C[i] / Output[i-1])^4) ;
+}
+
+_SECTION_BEGIN("Price");
+SetChartOptions(0,chartShowArrows|chartShowDates);
+_N(Title = StrFormat("{{NAME}} - {{INTERVAL}} {{DATE}} Open %g, Hi %g, Lo %g, Close %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 ) ) ));
+_SECTION_END();
+Plot(Output,"McGinley Dynamic",colorBlue,1|styleThick);
+Buy= Cross(C, output) AND V > 1.5*MA(V,20) AND RSI(14) > 45 AND V > 50000;
+Sell= Cross(output, C) AND V > 1.5*MA(V,20) AND RSI(14) < 50;
+PlotShapes(IIf( Sell, shapeDownArrow , shapeNone), colorRed,0,High, Offset=-15) ;
+PlotShapes(IIf( Buy , shapeUpArrow , shapeNone), colorGreen,0,Low, Offset=-15) ;
+
+_SECTION_END();
+_SECTION_BEGIN("Price");
+Title = EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V);
+_SECTION_BEGIN("Magnified Market Price");
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 34, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",234,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+30 );
+GfxTextOut( Name(), Hor,Ver-50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 14, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+85 );
+GfxSelectFont("arial", 18 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("UVN But Long 1", Status("pxheight")/26 );
+GfxTextOut( "TREND DAI", Status("pxwidth")/2, Status("pxheight")/18 );
+GfxSetTextColor( colorRed );
+GfxSelectFont("UVN But Long 1", Status("pxheight")/36 );
+GfxTextOut( "Hotline : 0372.095.129 - Website : Nududo.com" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxTextOut( "("+Name()+") "+ FullName() , Status("pxwidth")/2, Status("pxheight")/6 );
+_SECTION_END();
+
+
+

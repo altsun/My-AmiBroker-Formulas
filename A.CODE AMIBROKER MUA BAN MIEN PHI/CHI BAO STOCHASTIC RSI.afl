@@ -1,0 +1,74 @@
+_SECTION_BEGIN("STOCH RSI");
+PeriodRSI = Param( "PeriodRSI", 14, 1, 250, 1 );
+PeriodStoch = Param( "PeriodStoch", 14, 1, 250, 1 );
+MAType = Param( "MAType", 1, 1, 2, 1 );
+PeriodSK = Param( "PeriodSK", 3, 1, 250, 1 );
+PeriodSD = Param( "PeriodSD", 3, 1, 250, 1 );
+Upper = Param( "Upper", 80, 50, 100, 1 );
+Lower = Param( "Lower", 20, 0, 50, 1 );
+Center = Param( "Center", 50, 1, 100, 1 );
+irsi = RSI( PeriodRSI );
+llvRsi = LLV( irsi, PeriodStoch );
+hhvRsi = HHV( irsi, PeriodStoch );
+StoRSI = 100 * ((irsi- llvRsi) / Max(hhvRsi - llvRsi, 0.0001));
+if( MAType == 1 )
+{
+    SK = MA( StoRSI, PeriodSK );
+    SD = MA( SK, PeriodSD );
+}
+
+if( MAType == 2 )
+{
+    SK = EMA( StoRSI, PeriodSK );
+    SD = EMA( SK, PeriodSD );
+}
+Plot( Upper, "Upper", ParamColor( "ColorUpper", colorCustom5 ), styleLine );
+Plot( Lower, "Lower", ParamColor( "ColorLower", colorGreen ), styleLine );
+Plot( Center, "Center", ParamColor( "ColorCenter", colorWhite), styleDashed );
+Plot( SK, "DTOscSK", colorAqua, styleLine );
+Plot( SD, "DTOscSD", ParamColor( "ColorSD", colorRose ), styleDots );
+Plot( 0, "ZeroLine", ParamColor( "ColorZero", colorWhite ), styleLine );
+Plot( 100, "100Line", ParamColor( "Color100", colorWhite ), styleLine );
+_SECTION_BEGIN("Thong Tin");
+messageboard = ParamToggle("Tat Thong Tin","Hien|An",1);
+if (messageboard == 0 )
+{
+FS=Param("Font Size",35,11,100,1);
+GfxSelectFont("Times New Roman", 24, 700, italic = True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor( ParamColor("Color",colorCustom9) );
+Hor=Param("Horizontal Position",234,1,1200,1);
+Ver=Param("Vertical Position",1,1,1,1);
+GfxTextOut(""+C,Hor-150 , Ver+50 );
+GfxTextOut( Name(), Hor,Ver+50 );
+YC=TimeFrameGetPrice("C",inDaily,-1);
+DD=Prec(C-YC,2);
+xx=Prec((DD/YC)*100,2);
+GfxSelectFont("Times New Roman", 12, 700, italic =True, underline = False, True );
+GfxSetBkMode( colorWhite );
+GfxSetTextColor(ParamColor("Color",colorCustom9) );
+GfxTextOut(""+DD+" ("+xx+"%)", Hor-150, Ver+105 );
+GfxSelectFont("Times New Roman", 16 );
+GfxSetTextColor(ParamColor("dong",colorCustom8) );
+GfxSetTextAlign( 6 );// center alignment
+GfxSetTextColor( ColorRGB( 255, 255, 0 ) );
+GfxSetBkMode(0); // transparent
+GfxSelectFont("Times New Roman", Status("pxheight")/36 );
+GfxTextOut( "CHI BAO STOCHRSI", Status("pxwidth")/2, Status("pxheight")/18 );
+GfxSelectFont("Times New Roman", Status("pxheight")/56 );
+GfxTextOut( "Nududo.com - 0372.095.129" , Status("pxwidth")/2, Status("pxheight")/8 );
+GfxSetTextColor( colorLightGrey );
+GfxSelectFont("Times New Roman", Status("pxheight")/66 );
+GfxTextOut( FullName() , Status("pxwidth")/1.2, Status("pxheight")/12 );
+GfxTextOut( "("+Name()+") " , Status("pxwidth")/1.22, Status("pxheight")/8 );
+}
+_SECTION_END();
+_SECTION_BEGIN("Price");
+messageboard = ParamToggle("Tat Bar","Hien|An",1);
+if (messageboard == 1 )
+{
+Title = EncodeColor(colorCustom12) + "CHI BAO STOCHRSI" + " - " + EncodeColor(colorYellow)+ FullName()+"("+Name()+") - " + "Hotline :" + EncodeColor(colorRed)+ " 0372.095.129" + EncodeColor(colorYellow)+ " - Website :  "+ EncodeColor(colorRed)+"Nududo.com" + EncodeColor(colorWhite) + " - " + Interval(2) + EncodeColor(colorWhite) +
+ "  - " + Date() +"\n" +EncodeColor(colorWhite) +"Mo cua-"+O+"  "+"Cao-"+H+"  "+"Thap-"+L+"  "+
+"Dong cua-"+C+"  "+ "Khoi Luong= "+ WriteVal(V) ;
+}
+_SECTION_END();

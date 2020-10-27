@@ -1,0 +1,45 @@
+_SECTION_BEGIN("Formula 1 1 1 1");
+ Plot(C,"",IIf(C>Ref(C,-1),colorCustom9,colorRed),styleCandle);
+
+Cashin = 0;
+Cashout = 0;
+for (i = 0; i < 7; i++)
+{
+  Avgtoday = (Ref (H, -i)+Ref (L, -i)+Ref (C, -i))/3;
+  Cashtoday = Avgtoday * Ref (V, -i);
+
+  Avgyesterday = (Ref (H, -(i + 1))+Ref (L, -(i + 1))+Ref (C, -(i + 1)))/3;
+  Cashyesterday = Avgyesterday * Ref (V, -(i + 1));
+
+  Cashflow = Cashtoday - Cashyesterday;
+   Cashin = Cashin + IIf (Cashflow > 0, Cashflow, 0);
+   Cashout = Cashout - IIf (Cashflow < 0, Cashflow, 0);
+} 
+   Netcash = Cashin - Cashout;
+
+  AddColumn( i, "I", 1.0);
+ 
+   AddColumn( Cashin , "Cashin", 1.0 );
+ 
+   AddColumn( Cashout , "Cashout", 1.0 );
+ 
+   AddColumn( Netcash , "Netcash", 1.0 );
+ 
+   AddColumn( Cashin/Cashout , "Tyleinout", 1.2 );
+     Buy = Netcash >0;
+     PlotShapes( shapeUpArrow * buy, colorCustom12, 0,Low);
+
+    Filter = Buy;
+_SECTION_END();
+_SECTION_BEGIN("Vol");
+no=Param( "Swing", 10, 1, 55 );
+res=HHV(H,no);
+sup=LLV(L,no);
+avd=IIf(C>Ref(res,-1),1,IIf(C<Ref(sup,-1),-1,0));
+avn=ValueWhen(avd!=0,avd,1);
+tsl=IIf(avn==1,sup,res);
+VCol = ParamColor("Vol. Color", colorLime );
+VH = Param("Volume Height", 5,1,15,1 );
+SetBarFillColor( IIf( V > Ref(V,-1), colorGreen, colorRed) );
+PlotOHLC(0,V,0,V,"Volume",VCol,styleCandle|styleOwnScale,VH );
+_SECTION_END();
