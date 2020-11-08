@@ -1,0 +1,5 @@
+P = ParamField("Price field",-1);
+Plot( MA( P, 200 ), _DEFAULT_NAME(), colorRed, styleThick );
+Plot( MA( P, 100 ), _DEFAULT_NAME(), colorGold, styleThick );
+Plot( MA( P, 50 ), _DEFAULT_NAME(), colorDarkGreen, styleThick );
+Plot( MA( P, 20 ), _DEFAULT_NAME(), colorViolet, styleThick );
