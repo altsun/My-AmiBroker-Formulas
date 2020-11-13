@@ -35,11 +35,11 @@ DonchianMiddle = ( DonchianUpper + DonchianLower ) / 2;
 
 UpTrend = C > ( LLV( L, 20 ) + 2 * ATR( 10 ) ) AND EMA( Close, 20 ) > EMA( Close, 40 );
 DnTrend = C < ( HHV( H, 20 ) - 2 * ATR( 10 ) ) AND EMA( Close, 20 ) < EMA( Close, 40 );
-Color = IIf( UpTrend, colorBlue, IIf( DnTrend, colorOrange, colorCustom11 ) );
+Color = IIf( UpTrend, colorGreen, IIf( DnTrend, colorOrange, colorCustom11 ) );
 
 // Plots a 20 period Donchian channel
 Plot( C, "Price", Color, styleBar | styleThick );
-Plot( DonchianUpper, "Donchian U", ParamColor( "DU Color", colorBlue ), ParamStyle( "DU 
+Plot( DonchianUpper, "Donchian U", ParamColor( "DU Color", colorGreen ), ParamStyle( "DU 
 
 Style", styleLine ) );
 Plot( DonchianMiddle, "Donchian M", ParamColor( "DM Color", colorBrightGreen ), 
@@ -63,7 +63,7 @@ _SECTION_BEGIN( "Chandelier Exit" );
 
 SetBarsRequired( 50, 50 );
 
-Multiple = Param( "Multiple", 3, 0.5, 10, 0.1 ); // How many ATR’s to be allowed below the highest high since latest "buy" bar
+Multiple = Param( "Multiple", 3, 0.5, 10, 0.1 ); // How many ATRï¿½s to be allowed below the highest high since latest "buy" bar
 ATRPeriods = Param( "ATR Periods", 20, 1, 50, 1 ); // How many periods to use for the ATR
 
 stopArray = Null;
