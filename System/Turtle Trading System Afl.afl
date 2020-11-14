@@ -159,7 +159,7 @@ for ( i = 0; i < BarCount; i++ )
 
 Sell = Cover = exitarray;
 
-Buy = ExRem( Buy, Sell );
+Buy = ExRem( Buy, Sell ) AND V > 100000;
 Sell = ExRem( Sell, Buy );
 Short = ExRem( Short, Cover );
 Cover = ExRem( Cover, Short );
