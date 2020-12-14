@@ -1,0 +1,10 @@
+Filter = 
+
+V >= 100000
+AND C - Ref(C, -1) >= 1  // 1 tuong duong 1000 VND
+;
+
+
+AddColumn(C, "Close Price");
+AddColumn(Ref(C, -1), "Previous Close Price");
+SetSortColumns(-3);

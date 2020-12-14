@@ -1,0 +1,9 @@
+Filter = 
+
+V >= 100000
+;
+
+
+AddColumn(C*V, "Trade Value");
+AddColumn(C, "Close Price");
+SetSortColumns(-3);
