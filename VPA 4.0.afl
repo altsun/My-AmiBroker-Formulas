@@ -2,6 +2,7 @@
 //Volume Price Analysis AFL - VPA Version 1.2
 //AFL by Karthikmarar. Detailed explanation available at www.vpanalysis.blogspot.com
 //Added Exploration - detailed 241209
+// Modified by duongphamhn97@gmail.com
 //====================================================================================
 _SECTION_BEGIN("Volume Price Analysis - V.1.2");
 SetChartOptions(0,chartShowArrows|chartShowDates);
@@ -248,7 +249,9 @@ _SECTION_END();
 _SECTION_BEGIN("Exploration");
 
 Lq=V;
-Lqok=Lq>100000;
+Lqok=Lq>100000
+AND C*V >= 5000000
+;
 
 Filter=  (utbar OR utcond2 OR utcond3 OR stdn OR stdn0 OR stdn1 OR stdn2 OR eftup OR eftdn OR stvol OR Hutbar OR Hutcond
          OR tcbar OR Lvtbar2 OR dbar OR bycond) AND Lqok;
