@@ -1,0 +1,18 @@
+// Reference: https://forum.amibroker.com/t/finding-first-close-above-52week-highest/13982
+LengthNeeded = 50;
+base = BarsSince(Close==HHV(Close,260));  // how long has is been since the last 260-day high?
+freshHigh = Close == HHV(Close,260) AND Ref(base,-1) >= LengthNeeded;  // today is a 260-day high AND yesterday it had been at least 50 day since the last 260 day high
+
+Filter = 
+V > 100000
+AND C*V >= 5000000
+AND C > Ref(C, -1)
+AND freshHigh
+;
+
+AddColumn(((C - Ref(C,-1))/Ref(C,-1))*100, "% Tang gia" );
+AddColumn(C*V, "Gia tri GD");
+AddColumn(C, "Gia hom nay");
+AddColumn(Ref(base,-1), "So ngay ke tu dinh 52 tuan cu", format=1.0);
+AddSummaryRows(16, 1.2,5);
+SetSortColumns(-4) ;
