@@ -1,9 +1,23 @@
-Filter = 
+STOCK_EXCHANGES = "VNXALL, VNINDEX, VN30, HNXINDEX, HNX30, UPINDEX,";
 
-V >= 100000
+function in_list(target, list) {
+    // Check if target is in list
+    // target: string
+    // list: pseudo list of strings, format like "alpha, beta, gamma, delta, epsilon,"
+    result = False;
+    if (StrFind(list, StrFormat("%s,", target)) != 0) {
+        result = True;
+    }
+    return result;
+}
+
+Filter = 
+NOT in_list(Name(), STOCK_EXCHANGES)
+AND V >= 100000
+AND C*V >= 5000000
 ;
 
-
-AddColumn(C*V, "Trade Value");
-AddColumn(C, "Close Price");
-SetSortColumns(-3);
+AddColumn(C, "Gia hom nay");
+AddColumn(C*V, "Gia tri GD");
+SetSortColumns(-4);
+AddRankColumn();
