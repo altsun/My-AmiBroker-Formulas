@@ -1,5 +1,7 @@
 STOCK_EXCHANGES = "VNXALL, VNINDEX, VN30, HNXINDEX, HNX30, UPINDEX,";
 
+// Helper functions
+
 function in_list(target, list) {
     // Check if target is in list
     // target: string
@@ -11,8 +13,13 @@ function in_list(target, list) {
     return result;
 }
 
+function split(str, seperator, index) {
+    return StrExtract(StrReplace(str, " ", ","), index);
+}
+
 Filter = 
 NOT in_list(Name(), STOCK_EXCHANGES)
+AND split(Date(), " ", 0) == Now(format=1)
 AND V > 100000
 AND C*V >= 5000000
 AND C > Ref(C, -1)
